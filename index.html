@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Windows XP - معالج التقييم والشهادات</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -22,16 +22,18 @@
       background: #245edb url('bliss.png') no-repeat center center fixed;
       background-size: cover;
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
       padding: 12px;
-      padding-bottom: 45px;
+      /* إزاحة أسفل الصفحة لحماية المحتوى من شريط المهام ومنطقة سفاري */
+      padding-bottom: calc(36px + env(safe-area-inset-bottom, 0px));
       position: relative;
     }
 
-    /* شاشة ترحيب Windows XP (Welcome Screen) الزرقاء */
+    /* شاشة ترحيب Windows XP الزرقاء الكلاسيكية */
     .xp-welcome-screen {
       position: fixed;
       inset: 0;
@@ -44,7 +46,6 @@
       transition: opacity 0.7s ease, visibility 0.7s;
     }
 
-    /* الخط الأبيض المنصف الكلاسيكي */
     .xp-welcome-screen::before {
       content: "";
       position: absolute;
@@ -60,13 +61,12 @@
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      max-width: 600px;
+      max-width: 580px;
       padding: 20px;
       position: relative;
       z-index: 2;
     }
 
-    /* جهة شعار Windows XP */
     .welcome-brand {
       display: flex;
       flex-direction: column;
@@ -106,7 +106,6 @@
       font-size: 32px;
     }
 
-    /* جهة المستخدم مع مؤشر التحميل الخفيف */
     .welcome-user-box {
       display: flex;
       align-items: center;
@@ -114,17 +113,28 @@
       direction: ltr;
     }
 
+    /* أيقونة شطرنج كلاسيكية قديمة بدون إيموجي */
     .user-avatar {
-      width: 58px;
-      height: 58px;
+      width: 54px;
+      height: 54px;
       border: 2px solid #fff;
-      border-radius: 6px;
-      background: #f59e0b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 30px;
+      border-radius: 4px;
+      background: #104a9c;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      padding: 3px;
+      gap: 2px;
       box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+    }
+
+    .user-avatar div:nth-child(1),
+    .user-avatar div:nth-child(4) {
+      background: #fff;
+    }
+
+    .user-avatar div:nth-child(2),
+    .user-avatar div:nth-child(3) {
+      background: #e68a00;
     }
 
     .user-info {
@@ -136,7 +146,7 @@
     .user-name {
       color: white;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 15px;
       text-shadow: 1px 1px 2px #000;
     }
 
@@ -250,14 +260,26 @@
     .step-header {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 12px;
       border-bottom: 1px solid #d0ccb9;
       padding-bottom: 8px;
     }
 
-    .step-icon {
-      font-size: 24px;
+    /* أيقونة المعالج القديمة بدون إيموجي */
+    .step-icon-retro {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      background: #0055ea;
+      border: 2px solid #fff;
+      box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffcc00;
+      font-weight: 900;
+      font-size: 16px;
     }
 
     .step-info h3 {
@@ -378,18 +400,21 @@
       line-height: 1.4;
     }
 
+    /* شريط المهام المتوافق مع سفاري وأجهزة الجوال الحديثة */
     .taskbar {
-      position: absolute;
+      position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 32px;
+      height: calc(32px + env(safe-area-inset-bottom, 0px));
+      padding-bottom: env(safe-area-inset-bottom, 0px);
       background: linear-gradient(to bottom, #245edb 0%, #3f8cf3 9%, #245edb 18%, #245edb 92%, #1941a5 100%);
       display: flex;
       align-items: center;
-      padding: 0 4px;
+      padding-left: 4px;
+      padding-right: 4px;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
-      z-index: 50;
+      z-index: 500;
       cursor: pointer;
     }
 
@@ -405,7 +430,7 @@
       border-radius: 0 6px 6px 0;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       cursor: pointer;
     }
 
@@ -425,8 +450,8 @@
     }
 
     .start-menu {
-      position: absolute;
-      bottom: 32px;
+      position: fixed;
+      bottom: calc(32px + env(safe-area-inset-bottom, 0px));
       right: 0;
       width: 240px;
       background: #fff;
@@ -435,7 +460,7 @@
       box-shadow: 2px -2px 10px rgba(0,0,0,0.4);
       display: none;
       flex-direction: column;
-      z-index: 100;
+      z-index: 600;
     }
 
     .start-menu-header {
@@ -471,7 +496,7 @@
 </head>
 <body>
 
-  <!-- شاشة ترحيب Windows XP الزرقاء الكلاسيكية -->
+  <!-- شاشة ترحيب Windows XP -->
   <div id="welcomeScreen" class="xp-welcome-screen">
     <div class="welcome-container">
       <div class="welcome-brand">
@@ -485,7 +510,9 @@
       </div>
 
       <div class="welcome-user-box">
-        <div class="user-avatar">🦆</div>
+        <div class="user-avatar">
+          <div></div><div></div><div></div><div></div>
+        </div>
         <div class="user-info">
           <div class="user-name">مستخدم الاختبار</div>
           <div class="loading-status">
@@ -497,9 +524,10 @@
     </div>
   </div>
 
+  <!-- نافذة المعالج الرئيسية -->
   <div id="xpWindow" class="xp-window">
     <div class="title-bar">
-      <span>مُعالج التقييم والاعتماد - Windows XP</span>
+      <span>مُعالج التقييم والاعتماد الأكاديمي - Windows XP</span>
       <div class="title-bar-buttons">
         <div class="xp-btn-ctrl xp-min-max" id="btnMinimize">_</div>
         <div class="xp-btn-ctrl xp-min-max" id="btnMaximize">□</div>
@@ -509,7 +537,7 @@
 
     <div class="window-body">
       <div class="step-header">
-        <div id="stepIcon" class="step-icon">🎓</div>
+        <div class="step-icon-retro">W</div>
         <div class="step-info">
           <h3 id="stepTitle">الخطوة الأولى: تحديد التخصص</h3>
           <p id="stepDesc">اختر مسارك الأكاديمي لبدء الاختبار المخصص.</p>
@@ -524,6 +552,7 @@
     </div>
   </div>
 
+  <!-- نافذة إيرور ويندوز الكلاسيكية -->
   <div id="xpErrorDialog" class="xp-error-dialog">
     <div class="title-bar" style="background: linear-gradient(to bottom, #0058ee 0%, #0041cb 100%);">
       <span>خطأ في النظام - Windows Explorer</span>
@@ -540,21 +569,21 @@
     </div>
   </div>
 
+  <!-- قائمة ابدأ -->
   <div id="startMenu" class="start-menu">
     <div class="start-menu-header">مستخدم ويندوز XP</div>
     <div class="start-menu-item" id="cheatMenuItem">
-      <span>📜</span>
       <span style="font-weight: bold;">الحصول على جميع الشهادات</span>
     </div>
   </div>
 
+  <!-- شريط المهام المحدث للتوافق مع سفاري -->
   <div class="taskbar" id="taskbar">
-    <div class="start-btn" id="startBtn">ابدأ ⊞</div>
+    <div class="start-btn" id="startBtn">ابدأ</div>
     <div class="taskbar-item" id="taskbarWindowTab">معالج التقييم...</div>
   </div>
 
   <script>
-    // التحميل المسبق للصور والخطوط
     const realSignatureImg = new Image();
     realSignatureImg.src = 'signature.png';
 
@@ -579,7 +608,7 @@
         }
       }),
       document.fonts.ready,
-      new Promise(resolve => setTimeout(resolve, 1500)) // عرض شاشة الترحيب لفترة خفيفة
+      new Promise(resolve => setTimeout(resolve, 1500))
     ];
 
     Promise.all(assetsToLoad).then(() => {
@@ -596,43 +625,43 @@
           borderPrimary: "#0f3e85",
           borderSecondary: "#38bdf8",
           bg: "#f0f9ff",
-          sealText: "★ كود نظيف وبدون أخطاء ★"
+          sealText: "كود نظيف وبدون أخطاء"
         },
         questions: [
           {
-            q: "طلع لك Error أحمر ومو راضي يختفي، وش أول خطوة تسويها؟",
+            q: "ظهر لك خطأ برمجي ولم تتمكن من حله، ما هو تصرفك المباشر؟",
             options: [
-              { text: "أقرأ تفاصيل الخطأ في الـ Stack Trace وأصلحه", score: 1 },
-              { text: "أنسخ الخطأ وألصقه بالذكاء الاصطناعي بدون فهم", score: 2 },
-              { text: "أحط كومنت على السطر اللي فيه المشكلة وأقول انحلت", score: 3 },
-              { text: "أقفل اللابتوب وأقول المشكلة بالسيرفر وراجع له بكره", score: 4 }
+              { text: "قراءة تفاصيل الخطأ في الـ Stack Trace ومعالجته فوراً", score: 1 },
+              { text: "نسخ الخطأ ولصقه في أدوات الذكاء الاصطناعي دون فحص", score: 2 },
+              { text: "تحويل السطر البرمجي إلى تعليق (Comment) وتجاوز الأمر", score: 3 },
+              { text: "إغلاق الحاسوب وتأجيل متابعة المشروع إلى موعد غير مسمى", score: 4 }
             ]
           },
           {
-            q: "طلبوا منك تعديل كود برمجي قبل التسليم بساعة واحدة:",
+            q: "طُلب منك تعديل برمجي حرج قبل موعد التسليم بساعة واحدة:",
             options: [
-              { text: "أركّز وأعدّله بانتظام وأسلمه في الوقت المحدد", score: 1 },
-              { text: "أعدله بتوتر وأخرّب ثلاث صفحات ثانية بالخطأ", score: 2 },
-              { text: "أرسل ملف مضغوط تالف لكسب وقت إضافي لبكره", score: 3 },
-              { text: "أقفل الجوال وأقول انقطعت الكهرباء والإنترنت", score: 4 }
+              { text: "إجراء التعديل بهدوء واختباره وتسليمه في الموعد", score: 1 },
+              { text: "التعديل السريع مع التسبب في أخطاء غير متوقعة بباقي الصفحات", score: 2 },
+              { text: "إرسال ملف تالف عن قصد لكسب مهلة إضافية حتى الغد", score: 3 },
+              { text: "إغلاق الهاتف الذكي والتحجج بانقطاع التيار الكهربائي والإنترنت", score: 4 }
             ]
           },
           {
-            q: "كم عدد التابات المفتوحة في متصفحك أثناء البرمجة؟",
+            q: "ما هو معدل التبويبات المفتوحة لديك أثناء العمل على المهام؟",
             options: [
-              { text: "أقل من 5 تابات وكلها مراجع عمل رسمية", score: 1 },
-              { text: "بين 10 إلى 20 تاب وناسيهم تماماً", score: 2 },
-              { text: "فوق 50 تاب وصوت مروحة اللابتوب مقلعة كأنها طيارة", score: 3 },
-              { text: "التابات صارت نقط صغيرة من كثرتها ومستحيل أقفل واحد", score: 4 }
+              { text: "أقل من 5 تبويبات وتقتصر على التوثيق والمراجع الأساسية", score: 1 },
+              { text: "بين 10 إلى 20 تبويباً معظمها غير مستخدم", score: 2 },
+              { text: "أكثر من 50 تبويباً مع ارتفاع ملحوظ في حرارة المعالج", score: 3 },
+              { text: "تحول التبويبات لنقاط متراصة ومستحيل إغلاق أي تبويب منها", score: 4 }
             ]
           },
           {
-            q: "متى تسوي Commit وترفع تعديلاتك على Git؟",
+            q: "متى تقوم بتثبيت التعديلات ورفعها على أنظمة التحكم Git؟",
             options: [
-              { text: "بعد كل تعديل جزئي مع رسالة وصفية دقيقة", score: 1 },
-              { text: "نهاية اليوم مع رسالة 'update'", score: 2 },
-              { text: "كوميت واحد فقط للمشروع كامل مكتوب فيه 'final_v2'", score: 3 },
-              { text: "ما أستخدم Git، أرسل الملف المضغوط لنفسي بالواتساب", score: 4 }
+              { text: "عقب كل ميزة برمجية مع صياغة رسالة واضحة ودقيقة", score: 1 },
+              { text: "في نهاية يوم العمل مع رسالة مقتضبة وغير مفصلة", score: 2 },
+              { text: "تثبيت شامل لكامل المشروع دفعة واحدة باسم final_build", score: 3 },
+              { text: "الاعتماد على حفظ المجلدات يدوياً وتداولها عبر الرسائل", score: 4 }
             ]
           }
         ]
@@ -643,43 +672,43 @@
           borderPrimary: "#78350f",
           borderSecondary: "#f59e0b",
           bg: "#fffbeb",
-          sealText: "★ خبير التحجج والانسحاب ★"
+          sealText: "خبير التحجج والانسحاب"
         },
         questions: [
           {
-            q: "المنبه يدق الساعة 7:00 الصباح، وش الإجراء التلقائي؟",
+            q: "رنين المنبه في الصباح الباكر عند بداية يوم العمل:",
             options: [
-              { text: "أقوم فوراً وأجهز نفسي بنشاط", score: 1 },
-              { text: "غفوة 5 دقايق وأتحرك مستعجل ومتوتر", score: 2 },
-              { text: "أحسب كم دقيقة متبقية لي من رصيد الاستئذان المسموح", score: 3 },
-              { text: "أرجع أنام وأجهز عذر 'عطل مفاجئ في بطارية السيارة'", score: 4 }
+              { text: "الاستيقاظ فوراً والاستعداد للانطلاق في الوقت المحدد", score: 1 },
+              { text: "تفعيل الغفوة القصيرة والتحرك على عجل تحت الضغط", score: 2 },
+              { text: "حساب الدقائق المتبقية من رصيد الاستئذان المتاح للشهر", score: 3 },
+              { text: "العودة للنوم وصياغة عذر يتعلق بخلل تقني في المركبة", score: 4 }
             ]
           },
           {
-            q: "بدأ اجتماع زووم/تيمز مفاجئ ما له أي هدف محدد:",
+            q: "انعقاد اجتماع طارئ غير مدرج في جدول الأعمال ودون أهداف محددة:",
             options: [
-              { text: "أفتح الكاميرا وأشارك بالنقاش باهتمام", score: 1 },
-              { text: "أقفل الكاميرا وميوت وأسلك بالإيموجيات", score: 2 },
-              { text: "أدخل من الجوال وأروح المطبخ أجهز فطور", score: 3 },
-              { text: "أفصل الإنترنت بيدي وأكتب بالقروب 'الشبكة معلقة'", score: 4 }
+              { text: "حضور الاجتماع بكامل التركيز وتقديم مقترحات بناءة", score: 1 },
+              { text: "إغلاق الكاميرا وكتم الصوت والاكتفاء بالمتابعة الصامتة", score: 2 },
+              { text: "الانضمام عبر الهاتف ومتابعة أنشطة شخصية أخرى", score: 3 },
+              { text: "فصل الاتصال بالإنترنت عمداً وإبلاغ الفريق بوجود عطل عام", score: 4 }
             ]
           },
           {
-            q: "الساعة 1:30 ظهراً وباقي ساعة على نهاية الدوام الرسمي:",
+            q: "اقتراب نهاية ساعات العمل الرسمية بساعة واحدة:",
             options: [
-              { text: "أكمل مهامي وأرتب أولويات عمل الغد", score: 1 },
-              { text: "أبدأ أرتب مكتبي وأستعد للخروج", score: 2 },
-              { text: "أوقف جنب جهاز البصمة من 1:45 وأطالع بالساعة", score: 3 },
-              { text: "أنا بالبيت من 12:30 وكاتب 'طالع مهمة ميدانية'", score: 4 }
+              { text: "مواصلة أداء المهام وتنظيم جدول أعمال اليوم التالي", score: 1 },
+              { text: "ترتيب المكتب والاستعداد المسبق للمغادرة", score: 2 },
+              { text: "التواجد بالقرب من جهاز تسجيل الحضور قبل الموعد بدقائق", score: 3 },
+              { text: "الانصراف المبكر تحت بند إنجاز مهام ميدانية خارجية", score: 4 }
             ]
           },
           {
-            q: "شفت المدير أو شخص ما تبي تقابله مقبل في الممر:",
+            q: "مصادفة المدير أو أحد المسؤولين أثناء السير في الممر:",
             options: [
-              { text: "أسلم عليه بابتسامة وأكمل طريقي", score: 1 },
-              { text: "أطالع في شاشة الجوال بتركيز كأنه إيميل عاجل", score: 2 },
-              { text: "أغيّر مساري وأدخل أول غرفة أو مصعد يقابلني", score: 3 },
-              { text: "أحط الجوال على أذني وأقول بصوت عالي: 'يا ساتر! الحين جاي!'", score: 4 }
+              { text: "المبادرة بالتحية والحديث بود وثقة", score: 1 },
+              { text: "التركيز في شاشة الهاتف والادعاء بالانشغال برسالة مهمة", score: 2 },
+              { text: "تغيير المسار والانعطاف نحو أقرب مكتب أو مصعد", score: 3 },
+              { text: "وضع الهاتف على الأذن والتظاهر بإجراء مكالمة عمل عاجلة", score: 4 }
             ]
           }
         ]
@@ -690,43 +719,43 @@
           borderPrimary: "#312e81",
           borderSecondary: "#6366f1",
           bg: "#eef2ff",
-          sealText: "★ وسام النوم الاستراتيجي ★"
+          sealText: "وسام النوم الاستراتيجي"
         },
         questions: [
           {
-            q: "ساعات نومك اليومية في الأيام العادية:",
+            q: "معدل ساعات النوم المفضلة بالنسبة لك في الأيام العادية:",
             options: [
-              { text: "6 إلى 7 ساعات تكفيني بنشاط", score: 1 },
-              { text: "8 ساعات بالضبط", score: 2 },
-              { text: "12 ساعة ونومة العصر أساسية لا غنى عنها", score: 3 },
-              { text: "أنام لين يصدّع راسي، وإذا صدّع نمت زيادة عشان يروح", score: 4 }
+              { text: "من 6 إلى 7 ساعات تضمن النشاط والحيوية طوال اليوم", score: 1 },
+              { text: "8 ساعات متواصلة دون زيادة أو نقصان", score: 2 },
+              { text: "أكثر من 10 ساعات مع اعتبار نوم الظهيرة التزاماً رئيساً", score: 3 },
+              { text: "النوم المفتوح لأطول فترة ممكنة لتفادي أي التزامات", score: 4 }
             ]
           },
           {
-            q: "إذا انسدحت على السرير الساعة 11 بالليل:",
+            q: "عند الذهاب إلى الفراش استعداداً للنوم ليلاً:",
             options: [
-              { text: "أقفل كل الأجهزة وأنام خلال ربع ساعة", score: 1 },
-              { text: "أشوف مقطع واحد سريع باليوتيوب ثم أنام", score: 2 },
-              { text: "أتابع وثائقي عن تزاوج طيور البطريق لين 4 الفجر", score: 3 },
-              { text: "أفتح التيك توك وألقى الشمس طالعة بوجهي فجأة", score: 4 }
+              { text: "إغلاق الأجهزة الإلكترونية والاستغراق في النوم خلال دقائق", score: 1 },
+              { text: "تصفح مادة مرئية واحدة وجيزة قبل الاسترخاء", score: 2 },
+              { text: "متابعة وثائقيات ومقاطع عشوائية حتى الساعات المتأخرة", score: 3 },
+              { text: "التنقل غير المنقطع بين شبكات التواصل حتى طلوع الفجر", score: 4 }
             ]
           },
           {
-            q: "مفهومك عن 'نومة العصر السريعة':",
+            q: "المفهوم المعتمد لديك لفترة القيلولة السريعة (Power Nap):",
             options: [
-              { text: "غفوة سريعة (Power nap) لمدة 20 دقيقة", score: 1 },
-              { text: "ساعة واحدة فقط", score: 2 },
-              { text: "أنام العصر وأصحى 11 بالليل ناسي أي سنة إحنا", score: 3 },
-              { text: "تستمر نومة العصر لين صباح اليوم التالي تلقائياً", score: 4 }
+              { text: "استراحة ذهنية وجيزة تتراوح بين 15 إلى 20 دقيقة", score: 1 },
+              { text: "ساعة واحدة تتيح استعادة الطاقة للمساء", score: 2 },
+              { text: "النوم بعد الظهر والاستيقاظ في وقت متأخر من الليل", score: 3 },
+              { text: "تحول القيلولة تلقائياً إلى نوم ممتد حتى صباح الغد", score: 4 }
             ]
           },
           {
-            q: "المكان المفضل للراحة والاسترخاء:",
+            q: "البيئة والموقع المثالي للاسترخاء والخلود للراحة:",
             options: [
-              { text: "السرير وقت النوم الطبيعي", score: 1 },
-              { text: "الكنبة مع كاسة شاي هادئة", score: 2 },
-              { text: "أي مكان فيه تكييف حتى لو كان كرسي انتظار", score: 3 },
-              { text: "قادر أنام واقفاً في أشد أوقات الزحمة بكل أريحية", score: 4 }
+              { text: "الغرفة الهادئة والسرير المخصص للنوم ليلاً فقط", score: 1 },
+              { text: "أريكة الجلوس المريحة مع مشروب دافئ وهادئ", score: 2 },
+              { text: "أي مساحة مكيفة ومتاحة حتى لو كانت مقعد انتظار", score: 3 },
+              { text: "القدرة على النوم السريع في أصعب الظروف وأشد الأماكن صخباً", score: 4 }
             ]
           }
         ]
@@ -741,7 +770,6 @@
     const contentArea = document.getElementById('contentArea');
     const stepTitle = document.getElementById('stepTitle');
     const stepDesc = document.getElementById('stepDesc');
-    const stepIcon = document.getElementById('stepIcon');
     const nextBtn = document.getElementById('nextBtn');
     const xpWindow = document.getElementById('xpWindow');
     const xpErrorDialog = document.getElementById('xpErrorDialog');
@@ -773,7 +801,7 @@
 
       if (position === 'bottom') {
         xpErrorDialog.style.top = 'auto';
-        xpErrorDialog.style.bottom = '45px';
+        xpErrorDialog.style.bottom = 'calc(45px + env(safe-area-inset-bottom, 0px))';
         xpErrorDialog.style.left = '50%';
         xpErrorDialog.style.transform = 'translateX(-50%)';
       } else {
@@ -787,11 +815,11 @@
     }
 
     document.getElementById('btnClose').onclick = () => {
-      triggerXpError("خطأ 0x80004005: لا يمكنك إغلاق النافذة قبل إنهاء الاختبار واستلام شهادتك!");
+      triggerXpError("خطأ 0x80004005: لا يمكن إنهاء المعالج قبل استكمال التقييم وإصدار الوثيقة.");
     };
 
     document.getElementById('btnMaximize').onclick = () => {
-      triggerXpError("خطأ في العرض: الشاشة الحالية ممتلئة بالصبر، لا تتوفر مساحة إضافية للتكبير!");
+      triggerXpError("خطأ في العرض: أبعاد النافذة الحالية مهيأة بالكامل، لا تتوفر مساحة إضافية للتكبير.");
     };
 
     document.getElementById('btnMinimize').onclick = () => {
@@ -805,7 +833,7 @@
 
     document.getElementById('taskbar').onclick = (e) => {
       if (e.target.id !== 'startBtn' && e.target.id !== 'taskbarWindowTab') {
-        triggerXpError("خطأ Explorer.exe: وصول غير مصرح به لشريط المهام! يرجى إكمال الاختبار أولاً.", "bottom");
+        triggerXpError("خطأ Explorer.exe: تعذر الوصول لشريط المهام أثناء عمل المعالج. يرجى المتابعة.", "bottom");
       }
     };
 
@@ -817,7 +845,7 @@
     document.getElementById('cheatMenuItem').onclick = (e) => {
       e.stopPropagation();
       startMenu.style.display = 'none';
-      triggerXpError("خطأ في تصريح النظام: صدقت إن فيه شهادات جاهزة بدون اختبار؟ ارجع اختبر يلا 😂");
+      triggerXpError("خطأ في صلاحيات النظام: لا تتوفر شهادات فورية دون إتمام خطوات الاختبار.");
       xpWindow.classList.remove('minimized');
     };
 
@@ -834,7 +862,6 @@
       if (currentStep === 0) {
         stepTitle.textContent = "الخطوة الأولى: تحديد المسار";
         stepDesc.textContent = "اختر التخصص المطلوب لبدء الاختبار:";
-        stepIcon.textContent = "🧭";
         contentArea.innerHTML = `
           <label style="font-weight: bold;">اختر التخصص الأكاديمي المعتمد:</label>
           <select id="majorSelect">
@@ -850,7 +877,6 @@
         const qData = majorsData[selectedMajorKey].questions[qIndex];
         stepTitle.textContent = `السؤال (${currentStep} من 4)`;
         stepDesc.textContent = majorsData[selectedMajorKey].name;
-        stepIcon.textContent = "📝";
 
         let optionsHtml = qData.options.map((opt, idx) => `
           <label class="radio-label">
@@ -867,7 +893,6 @@
       else if (currentStep === 5) {
         stepTitle.textContent = "الخطوة الأخيرة: بيانات المتخرج";
         stepDesc.textContent = "اكتب اسمك كما ترغب بظهوره في وثيقة التخرج الرسمية:";
-        stepIcon.textContent = "✍️";
         contentArea.innerHTML = `
           <label style="font-weight: bold;">الاسم الكامل أو اللقب:</label>
           <input type="text" id="nameInput" placeholder="اكتب اسمك هنا..." autofocus>
@@ -876,7 +901,6 @@
       else if (currentStep === 6) {
         stepTitle.textContent = "تم استخراج وثيقة التخرج!";
         stepDesc.textContent = "شهادتك معتمدة رسمياً وجاهزة للتصدير كـ PDF.";
-        stepIcon.textContent = "🎉";
         nextBtn.textContent = "تحميل الشهادة الرسمية (PDF)";
 
         contentArea.innerHTML = `
@@ -888,12 +912,13 @@
       }
     }
 
+    // حساب التقدير الأكاديمي الساخر المعتمد على التخصص دون ذكر كلمة الصبر
     function calculateGrade(score) {
       const avg = score / 4;
-      if (avg <= 1.5) return "مقبول (مبتدئ يحتاج مزيداً من التدريب)";
-      if (avg <= 2.5) return "جيد (في طريق الاحتراف)";
-      if (avg <= 3.5) return "جيد جداً (متمكن وخبير في الصبر)";
-      return "ممتاز مع مرتبة الشرف الأولى في طول البال";
+      if (avg <= 1.5) return "مقبول - بحاجة لمزيد من الممارسة والتطوير";
+      if (avg <= 2.5) return "جيد - إلمام مناسب بأساسيات المسار";
+      if (avg <= 3.5) return "جيد جداً - كفاءة عالية وتطبيق متقدم للمهارات";
+      return "ممتاز مع مرتبة الشرف الأولى في التخصص";
     }
 
     function drawDynamicCertificate() {
@@ -914,18 +939,21 @@
         ctx.strokeStyle = currentMajor.theme.borderSecondary;
         ctx.strokeRect(32, 32, canvas.width - 64, canvas.height - 64);
 
+        // الترويسة
         ctx.textAlign = "center";
         ctx.fillStyle = currentMajor.theme.borderPrimary;
         ctx.font = "bold 15px 'Cairo', sans-serif";
-        ctx.fillText("الجوائز السنوية الخاصة • الاعتماد الرسمي للأكاديمية", canvas.width / 2, 80);
+        ctx.fillText("الجوائز السنوية الخاصة • الاعتماد الأكاديمي الموحد", canvas.width / 2, 80);
 
+        // العنوان
         ctx.font = "900 40px 'Cairo', sans-serif";
         ctx.fillText("شـهـادة إنـجـاز وتـقـديـر", canvas.width / 2, 135);
 
         ctx.fillStyle = "#555";
         ctx.font = "bold 16px 'Cairo', sans-serif";
-        ctx.fillText("تُمنح هذه الشهادة بكل فخر واعتزاز إلى:", canvas.width / 2, 175);
+        ctx.fillText("تُمنح هذه الشهادة رسمياً إلى الخريج:", canvas.width / 2, 175);
 
+        // الاسم
         ctx.fillStyle = currentMajor.theme.borderPrimary;
         ctx.font = "900 36px 'Cairo', sans-serif";
         ctx.fillText(studentName, canvas.width / 2, 235);
@@ -937,12 +965,13 @@
         ctx.lineTo(canvas.width / 2 + 160, 250);
         ctx.stroke();
 
+        // نصوص التقدير دون ذكر الصبر
         ctx.fillStyle = "#1e293b";
         ctx.font = "bold 16px 'Cairo', sans-serif";
-        ctx.fillText(`نظير اجتيازه بنجاح فائق اختبار التقييم في مسار: [ ${currentMajor.name} ]`, canvas.width / 2, 295);
-        ctx.fillText(`بتقدير رسمي معتمد: ( ${grade} ) وبمعدل صبر بلغ 100%.`, canvas.width / 2, 330);
+        ctx.fillText(`نظير اجتيازه بنجاح متطلبات التقييم النهائي في مسار: [ ${currentMajor.name} ]`, canvas.width / 2, 295);
+        ctx.fillText(`بتقدير رسمي صادر: ( ${grade} ) واستحقاقه لكافة الامتيازات المرتبطة به.`, canvas.width / 2, 330);
 
-        // الختم في الزاوية اليمنى
+        // الختم على جهة اليمين
         const sealX = canvas.width - 180;
         const sealY = 485;
 
@@ -960,7 +989,7 @@
         ctx.fillText("معتمد - 2026", 0, 14);
         ctx.restore();
 
-        // التوقيع في المنتصف
+        // التوقيع الكامل في المنتصف
         const sigWidth = 240;
         const sigHeight = 100;
         const sigX = (canvas.width / 2) - (sigWidth / 2);
@@ -973,7 +1002,7 @@
         ctx.font = "bold 16px 'Cairo'";
         ctx.fillText("الاعتماد والتصديق الرسمي", canvas.width / 2, 535);
 
-        // التاريخ والوقت في الزاوية اليسرى
+        // التاريخ والوقت في الزاوية اليسرى بلون داكن
         const now = new Date();
         const dateStr = now.toLocaleDateString('ar-SA', {
           year: 'numeric',
