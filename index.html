@@ -6,7 +6,7 @@
   <title>Windows XP - معالج التقييم والشهادات</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Tahoma&family=Cairo:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&display=swap" rel="stylesheet">
   
   <style>
     * {
@@ -28,13 +28,1033 @@
       justify-content: center;
       overflow: hidden;
       padding: 12px;
-      /* إزاحة أسفل الصفحة لحماية المحتوى من شريط المهام ومنطقة سفاري */
       padding-bottom: calc(36px + env(safe-area-inset-bottom, 0px));
       position: relative;
     }
 
-    /* شاشة ترحيب Windows XP الزرقاء الكلاسيكية */
+    /* شاشة الترحيب */
     .xp-welcome-screen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(to right, #003399 0%, #5a7edc 50%, #003399 100%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.7s ease, visibility 0.7s;
+    }
+
+    .xp-welcome-screen::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+    }
+
+    .welcome-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 580px;
+      padding: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .welcome-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .xp-flag-icon {
+      display: grid;
+      grid-template-columns: 18px 18px;
+      grid-gap: 3px;
+      transform: rotate(-10deg);
+      margin-bottom: 8px;
+    }
+
+    .flag-piece {
+      width: 18px;
+      height: 18px;
+      border-radius: 3px;
+    }
+
+    .flag-red { background: #f25022; }
+    .flag-green { background: #7fba00; }
+    .flag-blue { background: #00a4ef; }
+    .flag-yellow { background: #ffb900; }
+
+    .brand-text {
+      color: #fff;
+      font-size: 26px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .brand-text span {
+      color: #ffb900;
+      font-style: italic;
+      font-size: 32px;
+    }
+
+    .welcome-user-box {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      direction: ltr;
+    }
+
+    .user-avatar {
+      width: 54px;
+      height: 54px;
+      border: 2px solid #fff;
+      border-radius: 4px;
+      background: #104a9c;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      padding: 3px;
+      gap: 2px;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+    }
+
+    .user-avatar div:nth-child(1),
+    .user-avatar div:nth-child(4) {
+      background: #fff;
+    }
+
+    .user-avatar div:nth-child(2),
+    .user-avatar div:nth-child(3) {
+      background: #e68a00;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .user-name {
+      color: white;
+      font-weight: bold;
+      font-size: 15px;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    .loading-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #e2e8f0;
+      font-size: 12px;
+    }
+
+    .xp-mini-spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #fff;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      .welcome-container {
+        flex-direction: column;
+        gap: 30px;
+        text-align: center;
+      }
+      .welcome-brand {
+        align-items: center;
+      }
+      .xp-welcome-screen::before {
+        display: none;
+      }
+    }
+
+    /* نافذة Windows XP */
+    .xp-window {
+      width: 100%;
+      max-width: 520px;
+      background: #ece9d8;
+      border: 3px solid #0055ea;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.6);
+      position: relative;
+      transition: transform 0.25s, opacity 0.2s;
+      z-index: 10;
+    }
+
+    .xp-window.minimized {
+      transform: scale(0.05) translate(-1000px, 1000px);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .title-bar {
+      background: linear-gradient(to bottom, #0058ee 0%, #3593ff 4%, #288eff 6%, #1268ee 8%, #0156ea 14%, #0d76ff 68%, #0053e5 79%, #0041cb 100%);
+      padding: 4px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+      color: white;
+      text-shadow: 1px 1px #0f3e85;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .title-bar-buttons {
+      display: flex;
+      gap: 3px;
+      direction: ltr;
+    }
+
+    .xp-btn-ctrl {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #fff;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+    }
+
+    .xp-btn-ctrl:active {
+      box-shadow: inset 1px 1px 2px rgba(0,0,0,0.6);
+    }
+
+    .xp-close {
+      background: linear-gradient(to bottom, #f2826a 0%, #e24927 50%, #c42907 51%, #e54c29 100%);
+    }
+
+    .xp-min-max {
+      background: linear-gradient(to bottom, #3b88fc 0%, #1757c2 100%);
+    }
+
+    .window-body {
+      padding: 16px;
+      border-top: 1px solid #fff;
+    }
+
+    /* رأس الخطوة بدون أي مربعات أو صور جانبية */
+    .step-header-clean {
+      margin-bottom: 14px;
+      border-bottom: 1px solid #d0ccb9;
+      padding-bottom: 10px;
+    }
+
+    .step-header-clean h3 {
+      font-size: 13px;
+      color: #003399;
+      margin-bottom: 4px;
+      font-weight: bold;
+    }
+
+    .step-header-clean p {
+      font-size: 11px;
+      color: #444;
+      line-height: 1.4;
+    }
+
+    .content-area {
+      min-height: 160px;
+      font-size: 12px;
+    }
+
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      cursor: pointer;
+      padding: 5px 6px;
+      border-radius: 3px;
+      transition: background 0.12s;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .radio-label:hover {
+      background: #ded9c4;
+    }
+
+    input[type="text"], select {
+      background: #fff;
+      border-top: 2px solid #7f9db9;
+      border-left: 2px solid #7f9db9;
+      border-bottom: 1px solid #d5dfe5;
+      border-right: 1px solid #d5dfe5;
+      padding: 6px 8px;
+      font-size: 12px;
+      outline: none;
+      width: 100%;
+      margin-top: 6px;
+    }
+
+    .actions-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 16px;
+      border-top: 1px solid #fff;
+      padding-top: 12px;
+    }
+
+    .xp-button {
+      background: linear-gradient(to bottom, #ffffff 0%, #ecebe5 86%, #d8d0c5 100%);
+      border: 1px solid #003c74;
+      border-radius: 3px;
+      padding: 4px 18px;
+      font-size: 12px;
+      color: #000;
+      cursor: pointer;
+      min-width: 80px;
+      box-shadow: inset 0 1px 0 #fff;
+    }
+
+    .xp-button:hover {
+      background: linear-gradient(to bottom, #fff4cc 0%, #ffdb70 86%, #ffcd3c 100%);
+      border-color: #e5a000;
+    }
+
+    .xp-error-dialog {
+      position: absolute;
+      width: 90%;
+      max-width: 360px;
+      background: #ece9d8;
+      border: 3px solid #0055ea;
+      box-shadow: 4px 4px 20px rgba(0,0,0,0.7);
+      z-index: 1000;
+      display: none;
+    }
+
+    .xp-error-body {
+      padding: 14px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .xp-error-icon {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      background: #cc0000;
+      border-radius: 50%;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+      border: 2px solid #fff;
+      box-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+    }
+
+    .xp-error-text {
+      font-size: 11px;
+      color: #000;
+      line-height: 1.4;
+    }
+
+    /* شريط المهام */
+    .taskbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: calc(30px + env(safe-area-inset-bottom, 0px));
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      background: linear-gradient(to bottom, #245edb 0%, #3f8cf3 9%, #245edb 18%, #245edb 92%, #1941a5 100%);
+      display: flex;
+      align-items: center;
+      padding-left: 3px;
+      padding-right: 3px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+      z-index: 500;
+      cursor: pointer;
+    }
+
+    .start-btn {
+      height: 24px;
+      padding: 0 12px;
+      background: linear-gradient(to bottom, #388238 0%, #5cb85c 10%, #3e8e41 90%, #29612b 100%);
+      color: white;
+      font-style: italic;
+      font-weight: 900;
+      font-size: 12px;
+      border: 1px solid #1e4620;
+      border-radius: 0 6px 6px 0;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .taskbar-item {
+      margin-right: 6px;
+      height: 22px;
+      background: #1e52c9;
+      color: white;
+      border: 1px solid #103487;
+      border-radius: 3px;
+      padding: 0 8px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: inset 1px 1px 0 rgba(255,255,255,0.2);
+    }
+
+    .start-menu {
+      position: fixed;
+      bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+      right: 0;
+      width: 230px;
+      background: #fff;
+      border: 2px solid #0055ea;
+      border-bottom: none;
+      box-shadow: 2px -2px 10px rgba(0,0,0,0.4);
+      display: none;
+      flex-direction: column;
+      z-index: 600;
+    }
+
+    .start-menu-header {
+      background: linear-gradient(to bottom, #0058ee 0%, #0041cb 100%);
+      padding: 8px 10px;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .start-menu-item {
+      padding: 10px 12px;
+      font-size: 11px;
+      color: #000;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .start-menu-item:hover {
+      background: #2f71cd;
+      color: white;
+    }
+
+    #certCanvas {
+      max-width: 100%;
+      height: auto;
+      border: 2px solid #7f9db9;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- شاشة ترحيب Windows XP -->
+  <div id="welcomeScreen" class="xp-welcome-screen">
+    <div class="welcome-container">
+      <div class="welcome-brand">
+        <div class="xp-flag-icon">
+          <div class="flag-piece flag-red"></div>
+          <div class="flag-piece flag-green"></div>
+          <div class="flag-piece flag-blue"></div>
+          <div class="flag-piece flag-yellow"></div>
+        </div>
+        <div class="brand-text">Microsoft <span>XP</span></div>
+      </div>
+
+      <div class="welcome-user-box">
+        <div class="user-avatar">
+          <div></div><div></div><div></div><div></div>
+        </div>
+        <div class="user-info">
+          <div class="user-name">مستخدم التقييم</div>
+          <div class="loading-status">
+            <div class="xp-mini-spinner"></div>
+            <span>جاري بدء المعالج...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة المعالج الرئيسية -->
+  <div id="xpWindow" class="xp-window">
+    <div class="title-bar">
+      <span>مُعالج التقييم والاعتماد - Windows XP</span>
+      <div class="title-bar-buttons">
+        <div class="xp-btn-ctrl xp-min-max" id="btnMinimize">_</div>
+        <div class="xp-btn-ctrl xp-min-max" id="btnMaximize">□</div>
+        <div class="xp-btn-ctrl xp-close" id="btnClose">✕</div>
+      </div>
+    </div>
+
+    <div class="window-body">
+      <!-- رأس بسيط ونظيف بدون أي مربعات أو صور جانبية -->
+      <div class="step-header-clean">
+        <h3 id="stepTitle">الخطوة الأولى: تحديد المسار الأكاديمي</h3>
+        <p id="stepDesc">اختر التخصص المطلوب لبدء أسئلة المعالج.</p>
+      </div>
+
+      <div id="contentArea" class="content-area"></div>
+
+      <div class="actions-bar">
+        <button id="nextBtn" class="xp-button">التالي &gt;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة الخطأ -->
+  <div id="xpErrorDialog" class="xp-error-dialog">
+    <div class="title-bar" style="background: linear-gradient(to bottom, #0058ee 0%, #0041cb 100%);">
+      <span>خطأ في النظام - Windows Explorer</span>
+      <div class="title-bar-buttons">
+        <div class="xp-btn-ctrl xp-close" id="errorCloseBtn">✕</div>
+      </div>
+    </div>
+    <div class="xp-error-body">
+      <div class="xp-error-icon">✕</div>
+      <div id="errorText" class="xp-error-text">حدث خطأ داخلي غير معروف.</div>
+    </div>
+    <div class="actions-bar" style="background: #ece9d8; margin: 0; padding: 8px 12px;">
+      <button id="errorOkBtn" class="xp-button">موافق</button>
+    </div>
+  </div>
+
+  <!-- قائمة ابدأ -->
+  <div id="startMenu" class="start-menu">
+    <div class="start-menu-header">مستخدم ويندوز XP</div>
+    <div class="start-menu-item" id="cheatMenuItem">
+      <span style="font-weight: bold;">الحصول على جميع الشهادات</span>
+    </div>
+  </div>
+
+  <!-- شريط المهام -->
+  <div class="taskbar" id="taskbar">
+    <div class="start-btn" id="startBtn">ابدأ</div>
+    <div class="taskbar-item" id="taskbarWindowTab">معالج التقييم...</div>
+  </div>
+
+  <script>
+    const realSignatureImg = new Image();
+    realSignatureImg.src = 'signature.png';
+
+    const blissImg = new Image();
+    blissImg.src = 'bliss.png';
+
+    const welcomeScreen = document.getElementById('welcomeScreen');
+
+    const assetsToLoad = [
+      new Promise(resolve => {
+        if (realSignatureImg.complete) resolve();
+        else {
+          realSignatureImg.onload = resolve;
+          realSignatureImg.onerror = resolve;
+        }
+      }),
+      new Promise(resolve => {
+        if (blissImg.complete) resolve();
+        else {
+          blissImg.onload = resolve;
+          blissImg.onerror = resolve;
+        }
+      }),
+      document.fonts.ready,
+      new Promise(resolve => setTimeout(resolve, 1400))
+    ];
+
+    Promise.all(assetsToLoad).then(() => {
+      welcomeScreen.style.opacity = '0';
+      setTimeout(() => {
+        welcomeScreen.style.display = 'none';
+      }, 700);
+    });
+
+    const majorsData = {
+      "cs": {
+        name: "علوم الحاسب والتسويف البرمجي",
+        theme: {
+          borderPrimary: "#0f3e85",
+          borderSecondary: "#38bdf8",
+          bg: "#f0f9ff",
+          sealText: "كود نظيف وبدون أخطاء"
+        },
+        questions: [
+          {
+            q: "ظهر لك خطأ برمجي ولم تتمكن من حله، ما هو تصرفك المباشر؟",
+            options: [
+              { text: "قراءة تفاصيل الخطأ في الـ Stack Trace ومعالجته فوراً", score: 1 },
+              { text: "نسخ الخطأ ولصقه في أدوات الذكاء الاصطناعي دون فحص", score: 2 },
+              { text: "تحويل السطر البرمجي إلى تعليق (Comment) وتجاوز الأمر", score: 3 },
+              { text: "إغلاق الحاسوب وتأجيل متابعة المشروع إلى موعد غير مسمى", score: 4 }
+            ]
+          },
+          {
+            q: "طُلب منك تعديل برمجي حرج قبل موعد التسليم بساعة واحدة:",
+            options: [
+              { text: "إجراء التعديل بهدوء واختباره وتسليمه في الموعد", score: 1 },
+              { text: "التعديل السريع مع التسبب في أخطاء غير متوقعة بباقي الصفحات", score: 2 },
+              { text: "إرسال ملف تالف عن قصد لكسب مهلة إضافية حتى الغد", score: 3 },
+              { text: "إغلاق الهاتف الذكي والتحجج بانقطاع التيار الكهربائي والإنترنت", score: 4 }
+            ]
+          },
+          {
+            q: "ما هو معدل التبويبات المفتوحة لديك أثناء العمل على المهام؟",
+            options: [
+              { text: "أقل من 5 تبويبات وتقتصر على التوثيق والمراجع الأساسية", score: 1 },
+              { text: "بين 10 إلى 20 تبويباً معظمها غير مستخدم", score: 2 },
+              { text: "أكثر من 50 تبويباً مع ارتفاع ملحوظ في حرارة المعالج", score: 3 },
+              { text: "تحول التبويبات لنقاط متراصة ومستحيل إغلاق أي تبويب منها", score: 4 }
+            ]
+          },
+          {
+            q: "متى تقوم بتثبيت التعديلات ورفعها على أنظمة التحكم Git؟",
+            options: [
+              { text: "عقب كل ميزة برمجية مع صياغة رسالة واضحة ودقيقة", score: 1 },
+              { text: "في نهاية يوم العمل مع رسالة مقتضبة وغير مفصلة", score: 2 },
+              { text: "تثبيت شامل لكامل المشروع دفعة واحدة باسم final_build", score: 3 },
+              { text: "الاعتماد على حفظ المجلدات يدوياً وتداولها عبر الرسائل", score: 4 }
+            ]
+          }
+        ]
+      },
+      "hr": {
+        name: "هندسة الهروب من الدوام والاجتماعات",
+        theme: {
+          borderPrimary: "#78350f",
+          borderSecondary: "#f59e0b",
+          bg: "#fffbeb",
+          sealText: "خبير التحجج والانسحاب"
+        },
+        questions: [
+          {
+            q: "رنين المنبه في الصباح الباكر عند بداية يوم العمل:",
+            options: [
+              { text: "الاستيقاظ فوراً والاستعداد للانطلاق في الوقت المحدد", score: 1 },
+              { text: "تفعيل الغفوة القصيرة والتحرك على عجل تحت الضغط", score: 2 },
+              { text: "حساب الدقائق المتبقية من رصيد الاستئذان المتاح للشهر", score: 3 },
+              { text: "العودة للنوم وصياغة عذر يتعلق بخلل تقني في المركبة", score: 4 }
+            ]
+          },
+          {
+            q: "انعقاد اجتماع طارئ غير مدرج في جدول الأعمال ودون أهداف محددة:",
+            options: [
+              { text: "حضور الاجتماع بكامل التركيز وتقديم مقترحات بناءة", score: 1 },
+              { text: "إغلاق الكاميرا وكتم الصوت والاكتفاء بالمتابعة الصامتة", score: 2 },
+              { text: "الانضمام عبر الهاتف ومتابعة أنشطة شخصية أخرى", score: 3 },
+              { text: "فصل الاتصال بالإنترنت عمداً وإبلاغ الفريق بوجود عطل عام", score: 4 }
+            ]
+          },
+          {
+            q: "اقتراب نهاية ساعات العمل الرسمية بساعة واحدة:",
+            options: [
+              { text: "مواصلة أداء المهام وتنظيم جدول أعمال اليوم التالي", score: 1 },
+              { text: "ترتيب المكتب والاستعداد المسبق للمغادرة", score: 2 },
+              { text: "التواجد بالقرب من جهاز تسجيل الحضور قبل الموعد بدقائق", score: 3 },
+              { text: "الانصراف المبكر تحت بند إنجاز مهام ميدانية خارجية", score: 4 }
+            ]
+          },
+          {
+            q: "مصادفة المدير أو أحد المسؤولين أثناء السير في الممر:",
+            options: [
+              { text: "المبادرة بالتحية والحديث بود وثقة", score: 1 },
+              { text: "التركيز في شاشة الهاتف والادعاء بالانشغال برسالة مهمة", score: 2 },
+              { text: "تغيير المسار والانعطاف نحو أقرب مكتب أو مصعد", score: 3 },
+              { text: "وضع الهاتف على الأذن والتظاهر بإجراء مكالمة عمل عاجلة", score: 4 }
+            ]
+          }
+        ]
+      },
+      "sleep": {
+        name: "التحليل الاستراتيجي للنوم والراحة التامة",
+        theme: {
+          borderPrimary: "#312e81",
+          borderSecondary: "#6366f1",
+          bg: "#eef2ff",
+          sealText: "وسام النوم الاستراتيجي"
+        },
+        questions: [
+          {
+            q: "معدل ساعات النوم المفضلة بالنسبة لك في الأيام العادية:",
+            options: [
+              { text: "من 6 إلى 7 ساعات تضمن النشاط والحيوية طوال اليوم", score: 1 },
+              { text: "8 ساعات متواصلة دون زيادة أو نقصان", score: 2 },
+              { text: "أكثر من 10 ساعات مع اعتبار نوم الظهيرة التزاماً رئيساً", score: 3 },
+              { text: "النوم المفتوح لأطول فترة ممكنة لتفادي أي التزامات", score: 4 }
+            ]
+          },
+          {
+            q: "عند الذهاب إلى الفراش استعداداً للنوم ليلاً:",
+            options: [
+              { text: "إغلاق الأجهزة الإلكترونية والاستغراق في النوم خلال دقائق", score: 1 },
+              { text: "تصفح مادة مرئية واحدة وجيزة قبل الاسترخاء", score: 2 },
+              { text: "متابعة وثائقيات ومقاطع عشوائية حتى الساعات المتأخرة", score: 3 },
+              { text: "التنقل غير المنقطع بين شبكات التواصل حتى طلوع الفجر", score: 4 }
+            ]
+          },
+          {
+            q: "المفهوم المعتمد لديك لفترة القيلولة السريعة (Power Nap):",
+            options: [
+              { text: "استراحة ذهنية وجيزة تتراوح بين 15 إلى 20 دقيقة", score: 1 },
+              { text: "ساعة واحدة تتيح استعادة الطاقة للمساء", score: 2 },
+              { text: "النوم بعد الظهر والاستيقاظ في وقت متأخر من الليل", score: 3 },
+              { text: "تحول القيلولة تلقائياً إلى نوم ممتد حتى صباح الغد", score: 4 }
+            ]
+          },
+          {
+            q: "البيئة والموقع المثالي للاسترخاء والخلود للراحة:",
+            options: [
+              { text: "الغرفة الهادئة والسرير المخصص للنوم ليلاً فقط", score: 1 },
+              { text: "أريكة الجلوس المريحة مع مشروب دافئ وهادئ", score: 2 },
+              { text: "أي مساحة مكيفة ومتاحة حتى لو كانت مقعد انتظار", score: 3 },
+              { text: "القدرة على النوم السريع في أصعب الظروف وأشد الأماكن صخباً", score: 4 }
+            ]
+          }
+        ]
+      }
+    };
+
+    let currentStep = 0;
+    let selectedMajorKey = "";
+    let studentName = "";
+    let totalScore = 0;
+
+    const contentArea = document.getElementById('contentArea');
+    const stepTitle = document.getElementById('stepTitle');
+    const stepDesc = document.getElementById('stepDesc');
+    const nextBtn = document.getElementById('nextBtn');
+    const xpWindow = document.getElementById('xpWindow');
+    const xpErrorDialog = document.getElementById('xpErrorDialog');
+    const errorText = document.getElementById('errorText');
+    const startMenu = document.getElementById('startMenu');
+
+    function playXpErrorSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const freqs = [150, 190, 225, 380];
+        freqs.forEach(f => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(f, ctx.currentTime);
+          gain.gain.setValueAtTime(0.16, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.4);
+        });
+      } catch(e) {}
+    }
+
+    function triggerXpError(msg, position = 'center') {
+      errorText.textContent = msg;
+      xpErrorDialog.style.display = 'block';
+
+      if (position === 'bottom') {
+        xpErrorDialog.style.top = 'auto';
+        xpErrorDialog.style.bottom = 'calc(45px + env(safe-area-inset-bottom, 0px))';
+        xpErrorDialog.style.left = '50%';
+        xpErrorDialog.style.transform = 'translateX(-50%)';
+      } else {
+        xpErrorDialog.style.bottom = 'auto';
+        xpErrorDialog.style.top = '50%';
+        xpErrorDialog.style.left = '50%';
+        xpErrorDialog.style.transform = 'translate(-50%, -50%)';
+      }
+
+      playXpErrorSound();
+    }
+
+    document.getElementById('btnClose').onclick = () => {
+      triggerXpError("خطأ 0x80004005: لا يمكن إنهاء المعالج قبل استكمال التقييم وإصدار الوثيقة.");
+    };
+
+    document.getElementById('btnMaximize').onclick = () => {
+      triggerXpError("خطأ في العرض: أبعاد النافذة الحالية مهيأة بالكامل، لا تتوفر مساحة إضافية للتكبير.");
+    };
+
+    document.getElementById('btnMinimize').onclick = () => {
+      xpWindow.classList.add('minimized');
+    };
+
+    document.getElementById('taskbarWindowTab').onclick = (e) => {
+      e.stopPropagation();
+      xpWindow.classList.remove('minimized');
+    };
+
+    document.getElementById('taskbar').onclick = (e) => {
+      if (e.target.id !== 'startBtn' && e.target.id !== 'taskbarWindowTab') {
+        triggerXpError("خطأ Explorer.exe: تعذر الوصول لشريط المهام أثناء عمل المعالج. يرجى المتابعة.", "bottom");
+      }
+    };
+
+    document.getElementById('startBtn').onclick = (e) => {
+      e.stopPropagation();
+      startMenu.style.display = startMenu.style.display === 'flex' ? 'none' : 'flex';
+    };
+
+    document.getElementById('cheatMenuItem').onclick = (e) => {
+      e.stopPropagation();
+      startMenu.style.display = 'none';
+      triggerXpError("خطأ في صلاحيات النظام: لا تتوفر شهادات فورية دون إتمام خطوات الاختبار.");
+      xpWindow.classList.remove('minimized');
+    };
+
+    document.body.addEventListener('click', (e) => {
+      if (!startMenu.contains(e.target) && e.target.id !== 'startBtn') {
+        startMenu.style.display = 'none';
+      }
+    });
+
+    document.getElementById('errorOkBtn').onclick = () => xpErrorDialog.style.display = 'none';
+    document.getElementById('errorCloseBtn').onclick = () => xpErrorDialog.style.display = 'none';
+
+    function renderStep() {
+      if (currentStep === 0) {
+        stepTitle.textContent = "الخطوة الأولى: تحديد المسار الأكاديمي";
+        stepDesc.textContent = "اختر التخصص المطلوب لبدء أسئلة المعالج.";
+        contentArea.innerHTML = `
+          <label style="font-weight: bold;">اختر التخصص الأكاديمي المعتمد:</label>
+          <select id="majorSelect">
+            <option value="">-- اضغط للاختيار --</option>
+            <option value="cs">علوم الحاسب والتسويف البرمجي</option>
+            <option value="hr">هندسة الهروب من الدوام والاجتماعات</option>
+            <option value="sleep">التحليل الاستراتيجي للنوم والراحة التامة</option>
+          </select>
+        `;
+      } 
+      else if (currentStep >= 1 && currentStep <= 4) {
+        const qIndex = currentStep - 1;
+        const qData = majorsData[selectedMajorKey].questions[qIndex];
+        stepTitle.textContent = `السؤال (${currentStep} من 4)`;
+        stepDesc.textContent = majorsData[selectedMajorKey].name;
+
+        let optionsHtml = qData.options.map((opt, idx) => `
+          <label class="radio-label">
+            <input type="radio" name="quizOpt" value="${opt.score}" ${idx === 0 ? 'checked' : ''}>
+            <span>${opt.text}</span>
+          </label>
+        `).join('');
+
+        contentArea.innerHTML = `
+          <div style="font-weight: bold; margin-bottom: 6px; color:#003399;">${qData.q}</div>
+          <div class="radio-group">${optionsHtml}</div>
+        `;
+      } 
+      else if (currentStep === 5) {
+        stepTitle.textContent = "الخطوة الأخيرة: بيانات الاعتماد";
+        stepDesc.textContent = "اكتب اسمك كما ترغب بظهوره في وثيقة التخرج الرسمية:";
+        contentArea.innerHTML = `
+          <label style="font-weight: bold;">الاسم الكامل أو اللقب:</label>
+          <input type="text" id="nameInput" placeholder="اكتب اسمك هنا..." autofocus>
+        `;
+      } 
+      else if (currentStep === 6) {
+        stepTitle.textContent = "تم استخراج وثيقة التخرج";
+        stepDesc.textContent = "شهادتك معتمدة رسمياً وموقعة، جاهزة للتحميل كـ PDF.";
+        nextBtn.textContent = "تحميل الشهادة الرسمية (PDF)";
+
+        contentArea.innerHTML = `
+          <div style="display:flex; justify-content:center;">
+            <canvas id="certCanvas" width="900" height="600"></canvas>
+          </div>
+        `;
+        drawDynamicCertificate();
+      }
+    }
+
+    function calculateGrade(score) {
+      const avg = score / 4;
+      if (avg <= 1.5) return "مقبول - بحاجة لمزيد من الممارسة والتطوير";
+      if (avg <= 2.5) return "جيد - إلمام مناسب بأساسيات المسار";
+      if (avg <= 3.5) return "جيد جداً - كفاءة عالية وتطبيق متقدم للمهارات";
+      return "ممتاز مع مرتبة الشرف الأولى في التخصص";
+    }
+
+    function drawDynamicCertificate() {
+      const canvas = document.getElementById('certCanvas');
+      const ctx = canvas.getContext('2d');
+      const currentMajor = majorsData[selectedMajorKey];
+      const grade = calculateGrade(totalScore);
+
+      function render() {
+        ctx.fillStyle = currentMajor.theme.bg;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.lineWidth = 14;
+        ctx.strokeStyle = currentMajor.theme.borderPrimary;
+        ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = currentMajor.theme.borderSecondary;
+        ctx.strokeRect(32, 32, canvas.width - 64, canvas.height - 64);
+
+        ctx.textAlign = "center";
+        ctx.fillStyle = currentMajor.theme.borderPrimary;
+        ctx.font = "bold 15px 'Cairo', sans-serif";
+        ctx.fillText("الجوائز السنوية الخاصة • الاعتماد الأكاديمي الموحد", canvas.width / 2, 80);
+
+        ctx.font = "900 40px 'Cairo', sans-serif";
+        ctx.fillText("شـهـادة إنـجـاز وتـقـديـر", canvas.width / 2, 135);
+
+        ctx.fillStyle = "#555";
+        ctx.font = "bold 16px 'Cairo', sans-serif";
+        ctx.fillText("تُمنح هذه الشهادة رسمياً إلى الخريج:", canvas.width / 2, 175);
+
+        ctx.fillStyle = currentMajor.theme.borderPrimary;
+        ctx.font = "900 36px 'Cairo', sans-serif";
+        ctx.fillText(studentName, canvas.width / 2, 235);
+
+        ctx.strokeStyle = currentMajor.theme.borderSecondary;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2 - 160, 250);
+        ctx.lineTo(canvas.width / 2 + 160, 250);
+        ctx.stroke();
+
+        ctx.fillStyle = "#1e293b";
+        ctx.font = "bold 16px 'Cairo', sans-serif";
+        ctx.fillText(`نظير اجتيازه بنجاح متطلبات التقييم النهائي في مسار: [ ${currentMajor.name} ]`, canvas.width / 2, 295);
+        ctx.fillText(`بتقدير رسمي صادر: ( ${grade} ) واستحقاقه لكافة الامتيازات المرتبطة به.`, canvas.width / 2, 330);
+
+        // الختم يمين
+        const sealX = canvas.width - 180;
+        const sealY = 485;
+
+        ctx.save();
+        ctx.translate(sealX, sealY);
+        ctx.beginPath();
+        ctx.arc(0, 0, 46, 0, Math.PI * 2);
+        ctx.strokeStyle = currentMajor.theme.borderSecondary;
+        ctx.lineWidth = 4;
+        ctx.stroke();
+        ctx.fillStyle = currentMajor.theme.borderPrimary;
+        ctx.textAlign = "center";
+        ctx.font = "bold 11px 'Cairo'";
+        ctx.fillText(currentMajor.theme.sealText, 0, -6);
+        ctx.fillText("معتمد - 2026", 0, 14);
+        ctx.restore();
+
+        // التوقيع بالمنتصف
+        const sigWidth = 240;
+        const sigHeight = 100;
+        const sigX = (canvas.width / 2) - (sigWidth / 2);
+        const sigY = 415;
+
+        ctx.drawImage(realSignatureImg, sigX, sigY, sigWidth, sigHeight);
+
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "bold 16px 'Cairo'";
+        ctx.fillText("الاعتماد والتصديق الرسمي", canvas.width / 2, 535);
+
+        // التاريخ والوقت يسار
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('ar-SA', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        const timeStr = now.toLocaleTimeString('ar-SA', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "bold 13px 'Cairo'";
+        ctx.fillText(`التاريخ: ${dateStr}`, 210, 485);
+        ctx.fillText(`الوقت: ${timeStr}`, 210, 510);
+      }
+
+      if (realSignatureImg.complete && realSignatureImg.naturalWidth !== 0) {
+        render();
+      } else {
+        realSignatureImg.onload = render;
+      }
+    }
+
+    function exportCertificateToPdf() {
+      const canvas = document.getElementById('certCanvas');
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`شهادة_${majorsData[selectedMajorKey].name}_${studentName}.pdf`);
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if (currentStep === 0) {
+        const sel = document.getElementById('majorSelect');
+        if (!sel.value) {
+          triggerXpError("خطأ: يرجى تحديد التخصص أولاً للمتابعة.");
+          return;
+        }
+        selectedMajorKey = sel.value;
+        currentStep++;
+        renderStep();
+      } 
+      else if (currentStep >= 1 && currentStep <= 4) {
+        const checked = document.querySelector('input[name="quizOpt"]:checked');
+        totalScore += parseInt(checked.value, 10);
+        currentStep++;
+        renderStep();
+      } 
+      else if (currentStep === 5) {
+        const nameInput = document.getElementById('nameInput');
+        if (!nameInput.value.trim()) {
+          triggerXpError("خطأ: حقل الاسم فارغ! يرجى إدخال اسم المتخرج.");
+          return;
+        }
+        studentName = nameInput.value.trim();
+        currentStep++;
+        renderStep();
+      } 
+      else if (currentStep === 6) {
+        exportCertificateToPdf();
+      }
+    });
+
+    renderStep();
+  </script>
+</body>
+</html>    .xp-welcome-screen {
       position: fixed;
       inset: 0;
       background: linear-gradient(to right, #003399 0%, #5a7edc 50%, #003399 100%);
