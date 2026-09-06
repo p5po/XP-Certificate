@@ -5,10 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Windows XP - معالج التقييم والشهادات</title>
   
-  <!-- مكتبة jsPDF لإنشاء ملفات PDF مباشرة -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  
-  <!-- الخطوط العربية -->
   <link href="https://fonts.googleapis.com/css2?family=Tahoma&family=Cairo:wght@600;700;800;900&display=swap" rel="stylesheet">
   
   <style>
@@ -34,6 +31,151 @@
       position: relative;
     }
 
+    /* شاشة ترحيب Windows XP (Welcome Screen) الزرقاء */
+    .xp-welcome-screen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(to right, #003399 0%, #5a7edc 50%, #003399 100%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.7s ease, visibility 0.7s;
+    }
+
+    /* الخط الأبيض المنصف الكلاسيكي */
+    .xp-welcome-screen::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+    }
+
+    .welcome-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 600px;
+      padding: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* جهة شعار Windows XP */
+    .welcome-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .xp-flag-icon {
+      display: grid;
+      grid-template-columns: 18px 18px;
+      grid-gap: 3px;
+      transform: rotate(-10deg);
+      margin-bottom: 8px;
+    }
+
+    .flag-piece {
+      width: 18px;
+      height: 18px;
+      border-radius: 3px;
+    }
+
+    .flag-red { background: #f25022; }
+    .flag-green { background: #7fba00; }
+    .flag-blue { background: #00a4ef; }
+    .flag-yellow { background: #ffb900; }
+
+    .brand-text {
+      color: #fff;
+      font-size: 26px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .brand-text span {
+      color: #ffb900;
+      font-style: italic;
+      font-size: 32px;
+    }
+
+    /* جهة المستخدم مع مؤشر التحميل الخفيف */
+    .welcome-user-box {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      direction: ltr;
+    }
+
+    .user-avatar {
+      width: 58px;
+      height: 58px;
+      border: 2px solid #fff;
+      border-radius: 6px;
+      background: #f59e0b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .user-name {
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    .loading-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #e2e8f0;
+      font-size: 12px;
+    }
+
+    .xp-mini-spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #fff;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      .welcome-container {
+        flex-direction: column;
+        gap: 30px;
+        text-align: center;
+      }
+      .welcome-brand {
+        align-items: center;
+      }
+      .xp-welcome-screen::before {
+        display: none;
+      }
+    }
+
+    /* نافذة Windows XP */
     .xp-window {
       width: 100%;
       max-width: 530px;
@@ -329,6 +471,32 @@
 </head>
 <body>
 
+  <!-- شاشة ترحيب Windows XP الزرقاء الكلاسيكية -->
+  <div id="welcomeScreen" class="xp-welcome-screen">
+    <div class="welcome-container">
+      <div class="welcome-brand">
+        <div class="xp-flag-icon">
+          <div class="flag-piece flag-red"></div>
+          <div class="flag-piece flag-green"></div>
+          <div class="flag-piece flag-blue"></div>
+          <div class="flag-piece flag-yellow"></div>
+        </div>
+        <div class="brand-text">Microsoft <span>XP</span></div>
+      </div>
+
+      <div class="welcome-user-box">
+        <div class="user-avatar">🦆</div>
+        <div class="user-info">
+          <div class="user-name">مستخدم الاختبار</div>
+          <div class="loading-status">
+            <div class="xp-mini-spinner"></div>
+            <span>جاري بدء المعالج...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="xpWindow" class="xp-window">
     <div class="title-bar">
       <span>مُعالج التقييم والاعتماد - Windows XP</span>
@@ -386,9 +554,40 @@
   </div>
 
   <script>
-    // تحميل صورة التوقيع المحلية
+    // التحميل المسبق للصور والخطوط
     const realSignatureImg = new Image();
     realSignatureImg.src = 'signature.png';
+
+    const blissImg = new Image();
+    blissImg.src = 'bliss.png';
+
+    const welcomeScreen = document.getElementById('welcomeScreen');
+
+    const assetsToLoad = [
+      new Promise(resolve => {
+        if (realSignatureImg.complete) resolve();
+        else {
+          realSignatureImg.onload = resolve;
+          realSignatureImg.onerror = resolve;
+        }
+      }),
+      new Promise(resolve => {
+        if (blissImg.complete) resolve();
+        else {
+          blissImg.onload = resolve;
+          blissImg.onerror = resolve;
+        }
+      }),
+      document.fonts.ready,
+      new Promise(resolve => setTimeout(resolve, 1500)) // عرض شاشة الترحيب لفترة خفيفة
+    ];
+
+    Promise.all(assetsToLoad).then(() => {
+      welcomeScreen.style.opacity = '0';
+      setTimeout(() => {
+        welcomeScreen.style.display = 'none';
+      }, 700);
+    });
 
     const majorsData = {
       "cs": {
@@ -704,27 +903,22 @@
       const grade = calculateGrade(totalScore);
 
       function render() {
-        // 1. خلفية الشهادة
         ctx.fillStyle = currentMajor.theme.bg;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // 2. إطار خارجي مذهب أو كحلي
         ctx.lineWidth = 14;
         ctx.strokeStyle = currentMajor.theme.borderPrimary;
         ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
 
-        // إطار داخلي رفيع
         ctx.lineWidth = 3;
         ctx.strokeStyle = currentMajor.theme.borderSecondary;
         ctx.strokeRect(32, 32, canvas.width - 64, canvas.height - 64);
 
-        // 3. الترويسة العربية
         ctx.textAlign = "center";
         ctx.fillStyle = currentMajor.theme.borderPrimary;
         ctx.font = "bold 15px 'Cairo', sans-serif";
         ctx.fillText("الجوائز السنوية الخاصة • الاعتماد الرسمي للأكاديمية", canvas.width / 2, 80);
 
-        // 4. العنوان الرئيسي
         ctx.font = "900 40px 'Cairo', sans-serif";
         ctx.fillText("شـهـادة إنـجـاز وتـقـديـر", canvas.width / 2, 135);
 
@@ -732,7 +926,6 @@
         ctx.font = "bold 16px 'Cairo', sans-serif";
         ctx.fillText("تُمنح هذه الشهادة بكل فخر واعتزاز إلى:", canvas.width / 2, 175);
 
-        // 5. اسم المتدرب
         ctx.fillStyle = currentMajor.theme.borderPrimary;
         ctx.font = "900 36px 'Cairo', sans-serif";
         ctx.fillText(studentName, canvas.width / 2, 235);
@@ -744,13 +937,12 @@
         ctx.lineTo(canvas.width / 2 + 160, 250);
         ctx.stroke();
 
-        // 6. نصوص التقدير
         ctx.fillStyle = "#1e293b";
         ctx.font = "bold 16px 'Cairo', sans-serif";
         ctx.fillText(`نظير اجتيازه بنجاح فائق اختبار التقييم في مسار: [ ${currentMajor.name} ]`, canvas.width / 2, 295);
         ctx.fillText(`بتقدير رسمي معتمد: ( ${grade} ) وبمعدل صبر بلغ 100%.`, canvas.width / 2, 330);
 
-        // 7. الختم الرسمي (على جهة اليمين)
+        // الختم في الزاوية اليمنى
         const sealX = canvas.width - 180;
         const sealY = 485;
 
@@ -768,7 +960,7 @@
         ctx.fillText("معتمد - 2026", 0, 14);
         ctx.restore();
 
-        // 8. التوقيع الأصلي كامل في المنتصف
+        // التوقيع في المنتصف
         const sigWidth = 240;
         const sigHeight = 100;
         const sigX = (canvas.width / 2) - (sigWidth / 2);
@@ -781,7 +973,7 @@
         ctx.font = "bold 16px 'Cairo'";
         ctx.fillText("الاعتماد والتصديق الرسمي", canvas.width / 2, 535);
 
-        // 9. الوقت والتاريخ (في الزاوية اليسرى بلون كحلي داكن)
+        // التاريخ والوقت في الزاوية اليسرى
         const now = new Date();
         const dateStr = now.toLocaleDateString('ar-SA', {
           year: 'numeric',
