@@ -19,7 +19,7 @@
     }
 
     body {
-      background: #245edb url('bliss.png') no-repeat center center fixed;
+      background: #245edb url('bliss.webp') no-repeat center center fixed;
       background-size: cover;
       min-height: 100vh;
       min-height: 100dvh;
@@ -32,7 +32,7 @@
       position: relative;
     }
 
-    /* شاشة الترحيب الزرقاء */
+    /* شاشة الترحيب */
     .xp-welcome-screen {
       position: fixed;
       inset: 0;
@@ -42,7 +42,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.4s ease;
     }
 
     .xp-welcome-screen::before {
@@ -112,7 +112,6 @@
       direction: ltr;
     }
 
-    /* أفتار بطة ويندوز XP الكلاسيكي الأيقوني */
     .user-avatar-duck {
       width: 58px;
       height: 58px;
@@ -387,11 +386,17 @@
       background: linear-gradient(to bottom, #245edb 0%, #3f8cf3 9%, #245edb 18%, #245edb 92%, #1941a5 100%);
       display: flex;
       align-items: center;
-      padding-left: 3px;
-      padding-right: 3px;
+      justify-content: space-between;
+      padding-left: 6px;
+      padding-right: 4px;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
       z-index: 500;
       cursor: pointer;
+    }
+
+    .taskbar-left-side {
+      display: flex;
+      align-items: center;
     }
 
     .start-btn {
@@ -422,6 +427,37 @@
       align-items: center;
       cursor: pointer;
       box-shadow: inset 1px 1px 0 rgba(255,255,255,0.2);
+    }
+
+    /* زر Portfolio و To connect بالزاوية اليسرى */
+    .taskbar-connect {
+      height: 22px;
+      background: linear-gradient(to bottom, #0f3e85 0%, #1757c2 100%);
+      border: 1px solid #002663;
+      border-radius: 3px;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: #fff;
+      font-size: 11px;
+      font-weight: bold;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+      direction: ltr;
+    }
+
+    .taskbar-connect:hover {
+      background: linear-gradient(to bottom, #1757c2 0%, #2872ee 100%);
+      border-color: #38bdf8;
+    }
+
+    .online-indicator {
+      width: 7px;
+      height: 7px;
+      background-color: #22c55e;
+      border-radius: 50%;
+      box-shadow: 0 0 4px #22c55e;
     }
 
     .start-menu {
@@ -554,31 +590,33 @@
 
   <!-- شريط المهام -->
   <div class="taskbar" id="taskbar">
-    <div class="start-btn" id="startBtn">ابدأ</div>
-    <div class="taskbar-item" id="taskbarWindowTab">معالج التقييم...</div>
+    <div class="taskbar-left-side">
+      <div class="start-btn" id="startBtn">ابدأ</div>
+      <div class="taskbar-item" id="taskbarWindowTab">معالج التقييم...</div>
+    </div>
+    
+    <!-- رابط الـ Portfolio في الزاوية اليسرى مع To connect -->
+    <a href="https://abdullahbintaleb-portfolio.vercel.app" target="_blank" rel="noopener" class="taskbar-connect" id="portfolioBtn">
+      <span class="online-indicator"></span>
+      <span>To connect</span>
+    </a>
   </div>
 
   <script>
     const realSignatureImg = new Image();
     realSignatureImg.src = 'signature.png';
 
-    const blissImg = new Image();
-    blissImg.src = 'bliss.png';
-
     const welcomeScreen = document.getElementById('welcomeScreen');
 
-    // إخفاء فوري وآمن بدون أي تعليق نهائياً
-    function dismissWelcomeScreen() {
-      if (welcomeScreen.style.display !== 'none') {
+    // إخفاء فوري لشاشة الترحيب بعد 800ms دون أي حظر أو تعليق
+    setTimeout(() => {
+      if (welcomeScreen) {
         welcomeScreen.style.opacity = '0';
         setTimeout(() => {
           welcomeScreen.style.display = 'none';
-        }, 500);
+        }, 400);
       }
-    }
-
-    // انتهاء شاشة الترحيب بعد 1.2 ثانية كحد أقصى مهما كان وضع الشبكة
-    setTimeout(dismissWelcomeScreen, 1200);
+    }, 800);
 
     const majorsData = {
       "cs": {
@@ -794,7 +832,7 @@
     };
 
     document.getElementById('taskbar').onclick = (e) => {
-      if (e.target.id !== 'startBtn' && e.target.id !== 'taskbarWindowTab') {
+      if (!e.target.closest('#startBtn') && !e.target.closest('#taskbarWindowTab') && !e.target.closest('#portfolioBtn')) {
         triggerXpError("خطأ Explorer.exe: تعذر الوصول لشريط المهام أثناء عمل المعالج. يرجى المتابعة.", "bottom");
       }
     };
@@ -812,7 +850,7 @@
     };
 
     document.body.addEventListener('click', (e) => {
-      if (!startMenu.contains(e.target) && e.target.id !== 'startBtn') {
+      if (!startMenu.contains(e.target) && !e.target.closest('#startBtn')) {
         startMenu.style.display = 'none';
       }
     });
@@ -928,7 +966,6 @@
         ctx.fillText(`نظير اجتيازه بنجاح متطلبات التقييم النهائي في مسار: [ ${currentMajor.name} ]`, canvas.width / 2, 295);
         ctx.fillText(`بتقدير رسمي صادر: ( ${grade} ) واستحقاقه لكافة الامتيازات المرتبطة به.`, canvas.width / 2, 330);
 
-        // الختم يمين
         const sealX = canvas.width - 180;
         const sealY = 485;
 
@@ -946,7 +983,6 @@
         ctx.fillText("معتمد - 2026", 0, 14);
         ctx.restore();
 
-        // التوقيع بالمنتصف
         const sigWidth = 240;
         const sigHeight = 100;
         const sigX = (canvas.width / 2) - (sigWidth / 2);
@@ -959,7 +995,6 @@
         ctx.font = "bold 16px 'Cairo'";
         ctx.fillText("الاعتماد والتصديق الرسمي", canvas.width / 2, 535);
 
-        // التاريخ والوقت يسار
         const now = new Date();
         const dateStr = now.toLocaleDateString('ar-SA', {
           year: 'numeric',
